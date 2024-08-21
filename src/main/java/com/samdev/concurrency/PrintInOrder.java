@@ -20,22 +20,24 @@ public class PrintInOrder {
     //
     //Example 1:
     //
-    //Input: nums = [1,2,3]
-    //Output: "firstsecondthird"
+    //Input: nums = [1,2,3,4]
+    //Output: "firstsecondthirdforth"
     //Explanation: There are three threads being fired asynchronously. The input [1,2,3] means thread A calls first(), thread B calls second(), and thread C calls third(). "firstsecondthird" is the correct output.
     //Example 2:
     //
-    //Input: nums = [1,3,2]
-    //Output: "firstsecondthird"
-    //Explanation: The input [1,3,2] means thread A calls first(), thread B calls third(), and thread C calls second(). "firstsecondthird" is the correct output.
+    //Input: nums = [1,3,2,4]
+    //Output: "firstsecondthirdforth"
+    //Explanation: The input [1,3,2] means thread A calls first(), thread B calls third(), and thread C calls second(). "firstsecondthirdforth" is the correct output.
 
 
     private Semaphore secondSemaphore;
     private Semaphore thirdSemaphore;
+    private Semaphore forthSemaphore;
 
     public PrintInOrder() {
         secondSemaphore = new Semaphore(0); // initially locked
         thirdSemaphore = new Semaphore(0);  // initially locked
+        forthSemaphore = new Semaphore(0);
     }
 
     public void first(Runnable printFirst) throws InterruptedException {
@@ -59,6 +61,13 @@ public class PrintInOrder {
         thirdSemaphore.acquire();
         // printThird.run() outputs "third". Do not change or remove this line.
         printThird.run();
+        forthSemaphore.release();
+    }
+    public void forth(Runnable printForth) throws InterruptedException {
+
+        //wait for third to finish
+        forthSemaphore.acquire();
+        printForth.run();
     }
 
 
@@ -89,9 +98,18 @@ public class PrintInOrder {
             }
         });
 
+        Thread thread4 = new Thread(() -> {
+            try {
+                foo.forth(()-> System.out.print("forth"));
+            } catch ( InterruptedException e){
+                e.printStackTrace();
+            }
+        });
+
         thread2.start();
         thread3.start();
         thread1.start();
+        thread4.start();
     }
 
 
