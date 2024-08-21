@@ -90,8 +90,8 @@ public class PrintInOrder {
         });
 
         // Start the threads in any order
-        thread3.start();
         thread2.start();
+        thread3.start();
         thread1.start();
     }
 
